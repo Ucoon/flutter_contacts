@@ -76,6 +76,10 @@ class Contact {
 
   String lastUpdateTimes;
 
+  int contactTimes;
+
+  String lastContactTime;
+
   /// A low-resolution version of the [photo].
   Uint8List? thumbnail;
 
@@ -136,8 +140,10 @@ class Contact {
   Contact({
     this.id = '',
     this.displayName = '',
-    this.lastUsedTimes ='',
-    this.lastUpdateTimes='',
+    this.lastUsedTimes = '',
+    this.lastUpdateTimes = '',
+    this.contactTimes = 0,
+    this.lastContactTime = '',
     this.thumbnail,
     this.photo,
     this.isStarred = false,
@@ -169,6 +175,8 @@ class Contact {
         displayName: (json['displayName'] as String?) ?? '',
         lastUsedTimes: (json['lastUsedTimes'] as String?) ?? '',
         lastUpdateTimes: (json['lastUpdateTimes'] as String?) ?? '',
+        contactTimes: (json['contactTimes'] as int?) ?? 0,
+        lastContactTime: (json['lastContactTime'] as String?) ?? '',
         thumbnail: json['thumbnail'] as Uint8List?,
         photo: json['photo'] as Uint8List?,
         isStarred: (json['isStarred'] as bool?) ?? false,
@@ -214,6 +222,8 @@ class Contact {
         'displayName': displayName,
         'lastUsedTimes': lastUsedTimes,
         'lastUpdateTimes': lastUpdateTimes,
+        'contactTimes': contactTimes,
+        'lastContactTime': lastContactTime,
         'thumbnail': withThumbnail ? thumbnail : null,
         'photo': withPhoto ? photo : null,
         'isStarred': isStarred,

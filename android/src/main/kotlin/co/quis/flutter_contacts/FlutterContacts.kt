@@ -77,9 +77,11 @@ class FlutterContacts {
                 Data.MIMETYPE,
                 Contacts.DISPLAY_NAME_PRIMARY,
                 Contacts.STARRED,
-                Contacts.LAST_TIME_CONTACTED
+                Contacts.LAST_TIME_CONTACTED,
+                Contacts.TIMES_CONTACTED
             )
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                projection.add(Data.LAST_TIME_USED)
                 projection.add(Contacts.CONTACT_LAST_UPDATED_TIMESTAMP)
             }
             if (withThumbnail) {
@@ -206,10 +208,12 @@ class FlutterContacts {
                         /*displayName=*/
                         getString(Contacts.DISPLAY_NAME_PRIMARY),
                         isStarred = getBool(Contacts.STARRED),
-                        lastUsedTimes = getString(Contacts.LAST_TIME_CONTACTED),
+                        contactTimes = getInt(Contacts.TIMES_CONTACTED),
+                        lastContactTime = getString(Contacts.LAST_TIME_CONTACTED)
                     )
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        contact.lastUsedTimes = getString(Data.LAST_TIME_USED)
                         contact.lastUpdateTimes = getString(Contacts.CONTACT_LAST_UPDATED_TIMESTAMP)
                     }
                     // Fetch high-resolution photo if requested.
@@ -725,11 +729,14 @@ class FlutterContacts {
                     (cursor.getString(cursor.getColumnIndex(Contacts.DISPLAY_NAME_PRIMARY))
                         ?: ""),
                     isStarred = cursor.getInt(cursor.getColumnIndex(Contacts.DISPLAY_NAME_PRIMARY)) == 0,
-                    lastUsedTimes = (cursor.getString(cursor.getColumnIndex(Contacts.LAST_TIME_CONTACTED))
+                    contactTimes = cursor.getInt(cursor.getColumnIndex(Contacts.TIMES_CONTACTED)),
+                    lastContactTime = (cursor.getString(cursor.getColumnIndex(Contacts.LAST_TIME_CONTACTED))
                         ?: "")
                 )
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    contact.lastUsedTimes = (cursor.getString(cursor.getColumnIndex(Data.LAST_TIME_USED))
+                        ?: "")
                     contact.lastUpdateTimes =
                         (cursor.getString(cursor.getColumnIndex(Contacts.CONTACT_LAST_UPDATED_TIMESTAMP))
                             ?: "")
