@@ -72,6 +72,10 @@ class Contact {
   /// The contact display name.
   String displayName;
 
+  String lastUsedTimes;
+
+  String lastUpdateTimes;
+
   /// A low-resolution version of the [photo].
   Uint8List? thumbnail;
 
@@ -132,6 +136,8 @@ class Contact {
   Contact({
     this.id = '',
     this.displayName = '',
+    this.lastUsedTimes ='',
+    this.lastUpdateTimes='',
     this.thumbnail,
     this.photo,
     this.isStarred = false,
@@ -161,6 +167,8 @@ class Contact {
   factory Contact.fromJson(Map<String, dynamic> json) => Contact(
         id: (json['id'] as String?) ?? '',
         displayName: (json['displayName'] as String?) ?? '',
+        lastUsedTimes: (json['lastUsedTimes'] as String?) ?? '',
+        lastUpdateTimes: (json['lastUpdateTimes'] as String?) ?? '',
         thumbnail: json['thumbnail'] as Uint8List?,
         photo: json['photo'] as Uint8List?,
         isStarred: (json['isStarred'] as bool?) ?? false,
@@ -204,6 +212,8 @@ class Contact {
       Map<String, dynamic>.from({
         'id': id,
         'displayName': displayName,
+        'lastUsedTimes': lastUsedTimes,
+        'lastUpdateTimes': lastUpdateTimes,
         'thumbnail': withThumbnail ? thumbnail : null,
         'photo': withPhoto ? photo : null,
         'isStarred': isStarred,

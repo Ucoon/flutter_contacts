@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.res.AssetFileDescriptor
 import android.database.Cursor
 import android.net.Uri
+import android.os.Build
 import android.provider.ContactsContract
 import android.provider.ContactsContract.CommonDataKinds.Email
 import android.provider.ContactsContract.CommonDataKinds.Event
@@ -75,8 +76,12 @@ class FlutterContacts {
                 Data.CONTACT_ID,
                 Data.MIMETYPE,
                 Contacts.DISPLAY_NAME_PRIMARY,
-                Contacts.STARRED
+                Contacts.STARRED,
+                Contacts.LAST_TIME_CONTACTED
             )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                projection.add(Contacts.CONTACT_LAST_UPDATED_TIMESTAMP)
+            }
             if (withThumbnail) {
                 projection.add(Photo.PHOTO)
             }
@@ -196,11 +201,17 @@ class FlutterContacts {
                 val id = if (returnUnifiedContacts) getString(Data.CONTACT_ID) else getString(Data.RAW_CONTACT_ID)
                 if (id !in index) {
                     var contact = Contact(
-                        /*id=*/id,
-                        /*displayName=*/getString(Contacts.DISPLAY_NAME_PRIMARY),
-                        isStarred = getBool(Contacts.STARRED)
+                        /*id=*/
+                        id,
+                        /*displayName=*/
+                        getString(Contacts.DISPLAY_NAME_PRIMARY),
+                        isStarred = getBool(Contacts.STARRED),
+                        lastUsedTimes = getString(Contacts.LAST_TIME_CONTACTED),
                     )
 
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                        contact.lastUpdateTimes = getString(Contacts.CONTACT_LAST_UPDATED_TIMESTAMP)
+                    }
                     // Fetch high-resolution photo if requested.
                     if (withPhoto) {
                         val contactUri: Uri =
@@ -708,13 +719,22 @@ class FlutterContacts {
             }
 
             while (cursor.moveToNext()) {
-                contacts.add(
-                    Contact(
-                        /*id=*/(cursor.getString(cursor.getColumnIndex(Contacts._ID)) ?: ""),
-                        /*displayName=*/(cursor.getString(cursor.getColumnIndex(Contacts.DISPLAY_NAME_PRIMARY)) ?: ""),
-                        isStarred = (cursor.getInt(cursor.getColumnIndex(Contacts.DISPLAY_NAME_PRIMARY)) ?: 0) == 0
-                    )
+                var contact = Contact(
+                    /*id=*/(cursor.getString(cursor.getColumnIndex(Contacts._ID)) ?: ""),
+                    /*displayName=*/
+                    (cursor.getString(cursor.getColumnIndex(Contacts.DISPLAY_NAME_PRIMARY))
+                        ?: ""),
+                    isStarred = cursor.getInt(cursor.getColumnIndex(Contacts.DISPLAY_NAME_PRIMARY)) == 0,
+                    lastUsedTimes = (cursor.getString(cursor.getColumnIndex(Contacts.LAST_TIME_CONTACTED))
+                        ?: "")
                 )
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    contact.lastUpdateTimes =
+                        (cursor.getString(cursor.getColumnIndex(Contacts.CONTACT_LAST_UPDATED_TIMESTAMP))
+                            ?: "")
+                }
+                contacts.add(contact)
             }
 
             cursor.close()
