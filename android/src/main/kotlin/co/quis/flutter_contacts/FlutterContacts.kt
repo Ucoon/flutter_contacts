@@ -209,7 +209,9 @@ class FlutterContacts {
                         getString(Contacts.DISPLAY_NAME_PRIMARY),
                         isStarred = getBool(Contacts.STARRED),
                         contactTimes = getInt(Contacts.TIMES_CONTACTED),
-                        lastContactTime = getString(Contacts.LAST_TIME_CONTACTED)
+                        lastContactTime = getString(Contacts.LAST_TIME_CONTACTED),
+                        lastUsedTimes = "",
+                        lastUpdateTimes = ""
                     )
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
@@ -731,7 +733,9 @@ class FlutterContacts {
                     isStarred = cursor.getInt(cursor.getColumnIndex(Contacts.DISPLAY_NAME_PRIMARY)) == 0,
                     contactTimes = cursor.getInt(cursor.getColumnIndex(Contacts.TIMES_CONTACTED)),
                     lastContactTime = (cursor.getString(cursor.getColumnIndex(Contacts.LAST_TIME_CONTACTED))
-                        ?: "")
+                        ?: ""),
+                    lastUsedTimes = "",
+                    lastUpdateTimes = ""
                 )
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
